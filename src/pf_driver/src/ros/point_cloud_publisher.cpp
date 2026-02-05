@@ -116,7 +116,7 @@ void PointcloudPublisher::handle_scan(sensor_msgs::msg::LaserScan::SharedPtr msg
     projector_.transformLaserScanToPointCloud(frame_id_, *msg, c, *tf_buffer_, -1.0, channelOptions);
   }
 
-  if (layer_idx <= layer_prev_)
+  if (params_->publish_pointcloud_per_line || layer_idx <= layer_prev_)
   {
     if (!cloud_->data.empty())
     {

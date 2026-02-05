@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
   int timesync_interval = 250;            /* [ms] time between polls if method=="requests" */
   int timesync_period = 10000;            /* [ms] period to collect time offsets for averaging */
   int timesync_offset_usec = 0;           /* [us] to be added to PC timestamp after conversion from sensor timestamp */
+  bool publish_pointcloud_per_line = false;
 
   if (!node->has_parameter("device"))
   {
@@ -170,6 +171,14 @@ int main(int argc, char* argv[])
     RCLCPP_INFO(node->get_logger(), "pfsdp_init[%d]: %s", i, pfsdp_init[i].c_str());
   }
 
+  if (!node->has_parameter("publish_pointcloud_per_line"))
+  {
+    node->declare_parameter("publish_pointcloud_per_line", publish_pointcloud_per_line);
+  }
+  node->get_parameter("publish_pointcloud_per_line", publish_pointcloud_per_line);
+  RCLCPP_INFO(node->get_logger(), "publish_pointcloud_per_line: %d", publish_pointcloud_per_line);
+  
+
   std::shared_ptr<HandleInfo> info = std::make_shared<HandleInfo>();
 
   info->handle_type = transport_str == "udp" ? HandleInfo::HANDLE_TYPE_UDP : HandleInfo::HANDLE_TYPE_TCP;
@@ -210,6 +219,7 @@ int main(int argc, char* argv[])
 
   std::shared_ptr<ScanParameters> params = std::make_shared<ScanParameters>();
   params->apply_correction = node->get_parameter("apply_correction").get_parameter_value().get<bool>();
+  params->publish_pointcloud_per_line = node->get_parameter("publish_pointcloud_per_line").get_parameter_value().get<bool>();
 
   static PFInterface pf_interface(node);
 

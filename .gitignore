@@ -1,3 +1,17 @@
 *.json
 *.pyc
 *.orig
+
+build/
+log/
+install/
+.vscode/
+
+*.deb
+*.ddeb
+
+.obj-x86_64-linux-gnu
+
+src/pf_description/debian
+src/pf_driver/debian
+src/pf_interfaces/debian

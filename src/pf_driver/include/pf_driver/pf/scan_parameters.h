@@ -12,6 +12,8 @@ struct ScanParameters
   int layer_count = 1;
   int inclination_count = 1;
 
+  bool publish_pointcloud_per_line = false;
+
   TimeSync active_timesync;
   TimeSync passive_timesync;
 
