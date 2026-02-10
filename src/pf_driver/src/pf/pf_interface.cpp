@@ -56,10 +56,6 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
   // update global config_
   protocol_interface_->get_scan_parameters();
 
-  // Fix for old prototype LiDARs
-  params_->layer_count = 4;
-  params_->inclination_count = 4;
-
   if (params_->layer_count > 1 && params_->inclination_count > 1)
   {
     params_->scan_time_factor = params_->layer_count;

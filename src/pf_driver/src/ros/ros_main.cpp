@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
   int timesync_period = 10000;            /* [ms] period to collect time offsets for averaging */
   int timesync_offset_usec = 0;           /* [us] to be added to PC timestamp after conversion from sensor timestamp */
   bool publish_pointcloud_per_line = false;
+  int override_layer_count = 0;
 
   if (!node->has_parameter("device"))
   {
@@ -177,7 +178,12 @@ int main(int argc, char* argv[])
   }
   node->get_parameter("publish_pointcloud_per_line", publish_pointcloud_per_line);
   RCLCPP_INFO(node->get_logger(), "publish_pointcloud_per_line: %d", publish_pointcloud_per_line);
-  
+
+  if (!node->has_parameter("override_layer_count"))
+  {
+    node->declare_parameter("override_layer_count", override_layer_count);
+  }
+  node->get_parameter("override_layer_count", override_layer_count);
 
   std::shared_ptr<HandleInfo> info = std::make_shared<HandleInfo>();
 
@@ -220,6 +226,14 @@ int main(int argc, char* argv[])
   std::shared_ptr<ScanParameters> params = std::make_shared<ScanParameters>();
   params->apply_correction = node->get_parameter("apply_correction").get_parameter_value().get<bool>();
   params->publish_pointcloud_per_line = node->get_parameter("publish_pointcloud_per_line").get_parameter_value().get<bool>();
+  params->layer_count = node->get_parameter("override_layer_count").get_parameter_value().get<int>();
+  params->inclination_count = node->get_parameter("override_layer_count").get_parameter_value().get<int>();
+
+  if(params->layer_count != 0 && params->layer_count != 1 && params->layer_count != 4)
+  {
+    RCLCPP_ERROR(node->get_logger(), "Invalid override_layer_count. Must be 0, 1 or 4.");
+    return -1;
+  }
 
   static PFInterface pf_interface(node);
 

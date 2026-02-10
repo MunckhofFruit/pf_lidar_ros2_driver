@@ -355,13 +355,11 @@ void PFSDPBase::get_scan_parameters()
   params_->radial_range_min = parser_utils::to_float(resp["radial_range_min"]);
   params_->sampling_rate_max = parser_utils::to_long(resp["sampling_rate_max"]);
 
-  params_->layer_count = 1;
-  params_->inclination_count = 1;
-
   Json::Value json_resp = http_interface->get("get_parameter", { KV("list", "layer_count") });
   if (json_resp["error_code"].asInt() == 0)
   {
-    params_->layer_count = json_resp["layer_count"].asInt();
+    if(params_->layer_count == 0)
+      params_->layer_count = json_resp["layer_count"].asInt();
 
     json_resp = http_interface->get("get_parameter", { KV("list", "layer_inclination") });
     if (json_resp["error_code"].asInt() == 0)
@@ -375,7 +373,8 @@ void PFSDPBase::get_scan_parameters()
         {
           if (val[i].asDouble() != 0.0)
           {
-            params_->inclination_count = params_->layer_count;
+            if(params_->inclination_count == 0)
+              params_->inclination_count = params_->layer_count;
             break;
           }
         }
