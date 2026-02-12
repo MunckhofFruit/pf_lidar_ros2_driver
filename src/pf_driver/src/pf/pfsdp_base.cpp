@@ -348,6 +348,16 @@ std::string PFSDPBase::get_product()
   return get_parameter_str("product");
 }
 
+std::string PFSDPBase::get_revision_fw()
+{
+  return get_parameter_str("revision_fw");
+}
+
+std::string PFSDPBase::get_revision_hw()
+{
+  return get_parameter_str("revision_hw");
+}
+
 void PFSDPBase::get_scan_parameters()
 {
   auto resp = get_parameter("radial_range_min", "radial_range_max", "sampling_rate_max");

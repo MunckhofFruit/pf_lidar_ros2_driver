@@ -15,8 +15,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-PFDataPublisher::PFDataPublisher(std::shared_ptr<ScanConfig> config, std::shared_ptr<ScanParameters> params)
-  : config_(config), params_(params)
+PFDataPublisher::PFDataPublisher(std::shared_ptr<ScanConfig> config, std::shared_ptr<ScanParameters> params, bool swap_inclination_layer)
+  : config_(config), params_(params), swap_inclination_layer_(swap_inclination_layer)
 {
 }
 
@@ -40,6 +40,15 @@ void PFDataPublisher::read(PFR2000Packet_C& packet)
 
 void PFDataPublisher::read(PFR2300Packet_C1& packet)
 {
+  // Fix for difference in layer order
+  if (swap_inclination_layer_)
+  {
+    switch(packet.header.layer_inclination)
+    {
+      case 15000: packet.header.layer_inclination = 45000; break;
+      case 45000: packet.header.layer_inclination = 15000; break;
+    }
+  }
   publish_header(packet.header);
   to_msg_queue<PFR2300Packet_C1>(packet, packet.header.layer_index, packet.header.layer_inclination);
 }

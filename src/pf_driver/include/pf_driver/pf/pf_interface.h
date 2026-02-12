@@ -79,6 +79,10 @@ private:
   std::string topic_;
   std::string frame_id_;
   std::string product_;
+  std::string revision_fw_;
+  std::string revision_hw_;
+
+
 
   std::shared_ptr<HandleInfo> info_;
   std::shared_ptr<ScanConfig> config_;

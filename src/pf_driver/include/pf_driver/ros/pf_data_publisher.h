@@ -12,7 +12,7 @@
 class PFDataPublisher : public PFPacketReader
 {
 public:
-  PFDataPublisher(std::shared_ptr<ScanConfig> config, std::shared_ptr<ScanParameters> params);
+  PFDataPublisher(std::shared_ptr<ScanConfig> config, std::shared_ptr<ScanParameters> params, bool swap_inclination_layer);
 
   virtual void read(PFR2000Packet_A& packet);
   virtual void read(PFR2000Packet_B& packet);
@@ -31,6 +31,7 @@ protected:
 
   std::shared_ptr<ScanConfig> config_ = nullptr;
   std::shared_ptr<ScanParameters> params_ = nullptr;
+  bool swap_inclination_layer_;
 
   bool check_status(uint32_t status_flags);
 

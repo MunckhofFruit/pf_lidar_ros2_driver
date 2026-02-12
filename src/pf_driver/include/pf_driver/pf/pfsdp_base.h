@@ -120,6 +120,10 @@ public:
 
   virtual std::string get_product();
 
+  virtual std::string get_revision_fw();
+
+  virtual std::string get_revision_hw();
+
   virtual void get_scan_parameters();
 
   void setup_parameters_callback();

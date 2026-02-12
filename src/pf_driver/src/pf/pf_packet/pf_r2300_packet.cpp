@@ -52,13 +52,6 @@ std::tuple<uint16_t, uint32_t, uint16_t> PFR2300Packet::read_header(boost::share
   memcpy(&header.reserved5, buf, sizeof(uint64_t));
   buf += sizeof(uint64_t);
 
-
-  switch(header.layer_inclination)
-  {
-    case 15000: header.layer_inclination = 45000; break;
-    case 45000: header.layer_inclination = 15000; break;
-  }
-
   return std::tuple<uint16_t, uint32_t, uint16_t>(header.header.header_size, header.header.packet_size,
                                                   header.num_points_packet);
 }

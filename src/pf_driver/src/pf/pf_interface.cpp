@@ -53,6 +53,14 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
     return false;
   }
 
+  revision_fw_ = protocol_interface_->get_revision_fw();
+  RCLCPP_INFO(node_->get_logger(), "Revision firmware: %s", revision_fw_.c_str());
+
+  revision_hw_ = protocol_interface_->get_revision_hw();
+  RCLCPP_INFO(node_->get_logger(), "Device found: %s", revision_hw_.c_str());
+
+  auto swap_inclination_layer = (revision_fw_=="1.01" && revision_hw_=="1.00");
+
   // update global config_
   protocol_interface_->get_scan_parameters();
 
@@ -60,13 +68,13 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
   {
     params_->scan_time_factor = params_->layer_count;
     reader_ = std::shared_ptr<PFPacketReader>(
-        new PointcloudPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str(), params_->layer_count));
+        new PointcloudPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str(), params_->layer_count, swap_inclination_layer));
   }
   else
   {
     params_->scan_time_factor = 1;
     reader_ = std::shared_ptr<PFPacketReader>(
-        new LaserscanPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str()));
+        new LaserscanPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str(), false));
   }
 
   if (std::find(opi.commands.begin(), opi.commands.end(), "list_iq_parameters") != opi.commands.end())
