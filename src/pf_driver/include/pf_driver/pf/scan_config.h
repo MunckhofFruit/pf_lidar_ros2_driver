@@ -17,6 +17,8 @@ struct ScanConfig
   int timesync_period = 0;
   int timesync_offset_usec = 0;
 
+  bool publish_pointcloud_per_line = false;
+
   // void print()
   // {
   //   std::cout << "Scan output config:\n"

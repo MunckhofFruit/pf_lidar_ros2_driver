@@ -116,15 +116,18 @@ void PointcloudPublisher::handle_scan(sensor_msgs::msg::LaserScan::SharedPtr msg
     projector_.transformLaserScanToPointCloud(frame_id_, *msg, c, *tf_buffer_, -1.0, channelOptions);
   }
 
-  if (params_->publish_pointcloud_per_line || layer_idx <= layer_prev_)
+  if (config_->publish_pointcloud_per_line || layer_idx <= layer_prev_)
   {
+    copy_pointcloud(*cloud_, c);
+
     if (!cloud_->data.empty())
     {
       cloud_->header.frame_id = frame_id_;
+      if(config_->publish_pointcloud_per_line)
+        cloud_->header.stamp = msg->header.stamp;
       pcl_publisher_->publish(*cloud_);
       cloud_.reset(new sensor_msgs::msg::PointCloud2());
     }
-    copy_pointcloud(*cloud_, c);
   }
   else
   {

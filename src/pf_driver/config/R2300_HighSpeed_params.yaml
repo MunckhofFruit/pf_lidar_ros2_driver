@@ -1,7 +1,7 @@
 pf_r2300:
   ros__parameters:
     transport: "udp"
-    scanner_ip: "169.254.51.21"
+    scanner_ip: "10.111.3.132"
     # port: 3000 # optional
     start_angle: -500000
     max_num_points_scan: 0

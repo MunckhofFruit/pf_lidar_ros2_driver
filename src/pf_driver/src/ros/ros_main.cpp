@@ -222,10 +222,10 @@ int main(int argc, char* argv[])
   config->timesync_interval = node->get_parameter("timesync_interval").get_parameter_value().get<int>();
   config->timesync_period = node->get_parameter("timesync_period").get_parameter_value().get<int>();
   config->timesync_offset_usec = node->get_parameter("timesync_offset_usec").get_parameter_value().get<int>();
+  config->publish_pointcloud_per_line = node->get_parameter("publish_pointcloud_per_line").get_parameter_value().get<bool>();
 
   std::shared_ptr<ScanParameters> params = std::make_shared<ScanParameters>();
   params->apply_correction = node->get_parameter("apply_correction").get_parameter_value().get<bool>();
-  params->publish_pointcloud_per_line = node->get_parameter("publish_pointcloud_per_line").get_parameter_value().get<bool>();
   params->layer_count = node->get_parameter("override_layer_count").get_parameter_value().get<int>();
   params->inclination_count = node->get_parameter("override_layer_count").get_parameter_value().get<int>();
 
