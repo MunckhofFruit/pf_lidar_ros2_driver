@@ -82,6 +82,16 @@ private:
   std::string revision_fw_;
   std::string revision_hw_;
 
+  enum class LineClass
+  {
+    SINGLE = 1,
+    QUAD = 4,
+    UNKNOWN = 0
+  };
+  LineClass line_class_ {LineClass::UNKNOWN};
+  LineClass get_product_line_class(const std::string& product) const;
+  bool get_line_class_line_count(int& count) const;
+  bool get_line_class_inclination_count(int& count) const;
 
 
   std::shared_ptr<HandleInfo> info_;

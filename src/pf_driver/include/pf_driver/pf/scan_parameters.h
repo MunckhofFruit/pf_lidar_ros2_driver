@@ -11,6 +11,8 @@ struct ScanParameters
   int scan_time_factor = 1;
   int layer_count = 1;
   int inclination_count = 1;
+  bool layer_count_received = false;
+  bool inclination_count_received = false;
 
   TimeSync active_timesync;
   TimeSync passive_timesync;
