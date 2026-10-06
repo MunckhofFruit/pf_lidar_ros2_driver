@@ -21,8 +21,14 @@ inline std::vector<uint8_t> hex_to_bytes(const std::string& hex)
 
 inline std::string get_dump_path()
 {
-  std::string dump_dir = ament_index_cpp::get_package_share_directory("pf_driver") + "/dumps/";
-  return dump_dir;
+  try
+  {
+    return ament_index_cpp::get_package_share_directory("pf_driver") + "/dumps/";
+  }
+  catch (const std::exception&)
+  {
+    return std::string(PF_DRIVER_SOURCE_DIR) + "/dumps/";
+  }
 }
 
 inline std::vector<uint8_t> read_dump(std::string& FILENAME)

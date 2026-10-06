@@ -102,6 +102,9 @@ if (BUILD_TESTING)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
+  target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+    PF_DRIVER_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+  )
   target_link_libraries(${PROJECT_NAME}_test
     ament_index_cpp::ament_index_cpp
     curlpp
