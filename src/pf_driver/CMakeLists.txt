@@ -32,6 +32,7 @@ include_directories(
 
 set(${PROJECT_NAME}_SOURCES
   src/pf/pf_interface.cpp
+  src/pf/pf_product_line_class.cpp
   src/pf/parser_utils.cpp
   src/pf/pf_packet_reader.cpp
   src/pf/pfsdp_base.cpp
@@ -91,6 +92,8 @@ if (BUILD_TESTING)
   #  tests/pfsdp_protocol.cpp)
     tests/pipeline.cpp
     tests/parse_packet.cpp
+    tests/product_line_class.cpp
+    tests/pfsdp_scan_parameters.cpp
   )
 
   # Add gtests

@@ -67,23 +67,21 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
   RCLCPP_INFO(node_->get_logger(), "Device found: %s", product_.c_str());
 
   //Determine the line class based on the product
-  line_class_ = get_product_line_class(product_);
-  RCLCPP_INFO(node_->get_logger(), "Line class: %d", static_cast<int>(line_class_));
+  line_class_.set_product(product_);
+  RCLCPP_INFO(node_->get_logger(), "Line class: %d", static_cast<int>(line_class_.get_product_line_class()));
 
   // update global config_
   protocol_interface_->get_scan_parameters();
 
   // Set product-derived layer and inclination counts if not specified
-  if (!params_->layer_count_received &&
-      !get_line_class_line_count(params_->layer_count))
+  if (!line_class_.apply_line_count(*params_))
   {
       RCLCPP_ERROR(node_->get_logger(), "Invalid configuration: unable to determine layer count from line class");
       return false;
   }
 
   // Set product-derived layer and inclination counts if not specified
-  if (!params_->inclination_count_received &&
-      !get_line_class_inclination_count(params_->inclination_count))
+  if (!line_class_.apply_inclination_count(*params_))
   {
       RCLCPP_ERROR(node_->get_logger(), "Invalid configuration: unable to determine inclination count from line class");
       return false;
@@ -93,7 +91,7 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
   //log line_class, layer_count, and inclination_count
   RCLCPP_INFO(node_->get_logger(), "Layer count: %d", params_->layer_count);
   RCLCPP_INFO(node_->get_logger(), "Inclination count: %d", params_->inclination_count);
-  RCLCPP_INFO(node_->get_logger(), "Line class: %d", static_cast<int>(line_class_));
+  RCLCPP_INFO(node_->get_logger(), "Line class: %d", static_cast<int>(line_class_.get_product_line_class()));
 
   if (params_->layer_count > 1 && params_->inclination_count > 1)
   {
@@ -180,48 +178,6 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
   change_state(PFState::INIT);
   return true;
 }
-
-PFInterface::LineClass PFInterface::get_product_line_class(const std::string& product) const
-{
-  if (product.size() >= 3 && product.compare(product.size() - 3, 3, "-4S") == 0)
-    return LineClass::QUAD;
-  if (product.size() >= 3 && product.compare(product.size() - 3, 3, "-1S") == 0)
-    return LineClass::SINGLE;
-  return LineClass::UNKNOWN;
-}
-
-bool PFInterface::get_line_class_line_count(int& count) const
-{
-  switch (line_class_)
-  {
-    case LineClass::SINGLE:
-      count = 1;
-      return true;
-    case LineClass::QUAD:
-      count = 4;
-      return true;
-    default:
-      count = 0;
-      return false;
-  }
-}
-
-bool PFInterface::get_line_class_inclination_count(int& count) const
-{
-  switch (line_class_)
-  {
-    case LineClass::SINGLE:
-      count = 1;
-      return true;
-    case LineClass::QUAD:
-      count = 4;
-      return true;
-    default:
-      count = 0;
-      return false;
-  }
-}
-
 
 void PFInterface::change_state(PFState state)
 {

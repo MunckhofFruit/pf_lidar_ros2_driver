@@ -10,6 +10,7 @@
 #include "pf_driver/pf/pf_writer.h"
 #include "pf_driver/pf/pf_packet_reader.h"
 #include "pf_driver/pf/pipeline.h"
+#include "pf_driver/pf/pf_product_line_class.h"
 #include "pf_driver/pf/timesync.h"
 #include "pf_driver/communication/transport.h"
 #include "pf_driver/pf/pfsdp_base.h"
@@ -82,17 +83,7 @@ private:
   std::string revision_fw_;
   std::string revision_hw_;
 
-  enum class LineClass
-  {
-    SINGLE = 1,
-    QUAD = 4,
-    UNKNOWN = 0
-  };
-  LineClass line_class_ {LineClass::UNKNOWN};
-  LineClass get_product_line_class(const std::string& product) const;
-  bool get_line_class_line_count(int& count) const;
-  bool get_line_class_inclination_count(int& count) const;
-
+  PFProductLineClass line_class_;
 
   std::shared_ptr<HandleInfo> info_;
   std::shared_ptr<ScanConfig> config_;
