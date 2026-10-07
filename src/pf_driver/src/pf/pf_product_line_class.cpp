@@ -9,11 +9,11 @@ PFProductLineClass::PFProductLineClass(const std::string& product)
 
 void PFProductLineClass::set_product(const std::string& product)
 {
-  if (product.size() >= 3 && product.compare(product.size() - 3, 3, "-4S") == 0)
+  if (product.ends_with("-4S"))
   {
     line_class_ = LineClass::QUAD;
   }
-  else if (product.size() >= 3 && product.compare(product.size() - 3, 3, "-1S") == 0)
+  else if (product.ends_with("-1S"))
   {
     line_class_ = LineClass::SINGLE;
   }
