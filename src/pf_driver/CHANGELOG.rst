@@ -2,6 +2,10 @@
 Changelog for package pf_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.1.8 (2026-10-06)
+------------------
+* classify products ending in `-4S` as QUAD and products ending in `-1S` as SINGLE
+
 2.1.0 (2025-03-26)
 ------------------
 * different methods implemented to calculate timestamp in sensor_msgs (header.stamp) and

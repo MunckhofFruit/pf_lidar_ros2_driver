@@ -8,8 +8,8 @@
 
 PointcloudPublisher::PointcloudPublisher(std::shared_ptr<rclcpp::Node> node, std::shared_ptr<ScanConfig> config,
                                          std::shared_ptr<ScanParameters> params, const std::string& scan_topic,
-                                         const std::string& frame_id, const uint16_t num_layers)
-  : PFDataPublisher(config, params), node_(node), layer_prev_(-1)
+                                         const std::string& frame_id, const uint16_t num_layers, bool swap_inclination_layer)
+  : PFDataPublisher(config, params, swap_inclination_layer), node_(node), layer_prev_(-1)
 {
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -116,19 +116,28 @@ void PointcloudPublisher::handle_scan(sensor_msgs::msg::LaserScan::SharedPtr msg
     projector_.transformLaserScanToPointCloud(frame_id_, *msg, c, *tf_buffer_, -1.0, channelOptions);
   }
 
-  if (params_->publish_pointcloud_per_line || layer_idx <= layer_prev_)
+  if(config_->publish_pointcloud_per_line)
   {
-    if (!cloud_->data.empty())
-    {
-      cloud_->header.frame_id = frame_id_;
-      pcl_publisher_->publish(*cloud_);
-      cloud_.reset(new sensor_msgs::msg::PointCloud2());
-    }
-    copy_pointcloud(*cloud_, c);
+    // Immediately publish the PointCloud2 message
+    c.header.frame_id = frame_id_;
+    pcl_publisher_->publish(c);
   }
   else
   {
-    add_pointcloud(*cloud_, c);
+    if ( layer_idx <= layer_prev_)
+    {
+      if (!cloud_->data.empty())
+      {
+        cloud_->header.frame_id = frame_id_;
+        pcl_publisher_->publish(*cloud_);
+        cloud_.reset(new sensor_msgs::msg::PointCloud2());
+      }
+      copy_pointcloud(*cloud_, c);
+    }
+    else
+    {
+      add_pointcloud(*cloud_, c);
+    }
   }
   layer_prev_ = layer_idx;
 }

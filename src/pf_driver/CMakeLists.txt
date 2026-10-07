@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
 project(pf_driver)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_POLICY_DEFAULT_CMP0144 OLD)
 
 find_package(ament_cmake REQUIRED)
@@ -32,6 +36,7 @@ include_directories(
 
 set(${PROJECT_NAME}_SOURCES
   src/pf/pf_interface.cpp
+  src/pf/pf_product_line_class.cpp
   src/pf/parser_utils.cpp
   src/pf/pf_packet_reader.cpp
   src/pf/pfsdp_base.cpp
@@ -91,6 +96,8 @@ if (BUILD_TESTING)
   #  tests/pfsdp_protocol.cpp)
     tests/pipeline.cpp
     tests/parse_packet.cpp
+    tests/product_line_class.cpp
+    tests/pfsdp_scan_parameters.cpp
   )
 
   # Add gtests
@@ -101,6 +108,9 @@ if (BUILD_TESTING)
   target_include_directories(${PROJECT_NAME}_test PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
+  )
+  target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+    PF_DRIVER_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
   )
   target_link_libraries(${PROJECT_NAME}_test
     ament_index_cpp::ament_index_cpp

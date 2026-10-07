@@ -10,6 +10,7 @@
 #include "pf_driver/pf/pf_writer.h"
 #include "pf_driver/pf/pf_packet_reader.h"
 #include "pf_driver/pf/pipeline.h"
+#include "pf_driver/pf/pf_product_line_class.h"
 #include "pf_driver/pf/timesync.h"
 #include "pf_driver/communication/transport.h"
 #include "pf_driver/pf/pfsdp_base.h"
@@ -79,6 +80,10 @@ private:
   std::string topic_;
   std::string frame_id_;
   std::string product_;
+  std::string revision_fw_;
+  std::string revision_hw_;
+
+  PFProductLineClass line_class_;
 
   std::shared_ptr<HandleInfo> info_;
   std::shared_ptr<ScanConfig> config_;

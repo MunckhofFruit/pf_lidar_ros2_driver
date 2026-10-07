@@ -53,33 +53,63 @@ bool PFInterface::init(std::shared_ptr<HandleInfo> info, std::shared_ptr<ScanCon
     return false;
   }
 
+  revision_fw_ = protocol_interface_->get_revision_fw();
+  RCLCPP_INFO(node_->get_logger(), "Revision firmware: %s", revision_fw_.c_str());
+
+  revision_hw_ = protocol_interface_->get_revision_hw();
+  RCLCPP_INFO(node_->get_logger(), "Revision hardware: %s", revision_hw_.c_str());
+
+  auto swap_inclination_layer = (revision_fw_=="1.01" && revision_hw_=="1.00");
+
+  RCLCPP_INFO(node_->get_logger(), "Swap inclination layer: %s", swap_inclination_layer ? "true" : "false");
+
+  product_ = protocol_interface_->get_product();
+  RCLCPP_INFO(node_->get_logger(), "Device found: %s", product_.c_str());
+
+  //Determine the line class based on the product
+  line_class_.set_product(product_);
+  RCLCPP_INFO(node_->get_logger(), "Line class: %d", static_cast<int>(line_class_.get_product_line_class()));
+
   // update global config_
   protocol_interface_->get_scan_parameters();
 
-  // Fix for old prototype LiDARs
-  params_->layer_count = 4;
-  params_->inclination_count = 4;
+  // Set product-derived layer and inclination counts if not specified
+  if (!line_class_.apply_line_count(*params_))
+  {
+      RCLCPP_ERROR(node_->get_logger(), "Invalid configuration: unable to determine layer count from line class");
+      return false;
+  }
+
+  // Set product-derived layer and inclination counts if not specified
+  if (!line_class_.apply_inclination_count(*params_))
+  {
+      RCLCPP_ERROR(node_->get_logger(), "Invalid configuration: unable to determine inclination count from line class");
+      return false;
+  }
+
+
+  //log line_class, layer_count, and inclination_count
+  RCLCPP_INFO(node_->get_logger(), "Layer count: %d", params_->layer_count);
+  RCLCPP_INFO(node_->get_logger(), "Inclination count: %d", params_->inclination_count);
+  RCLCPP_INFO(node_->get_logger(), "Line class: %d", static_cast<int>(line_class_.get_product_line_class()));
 
   if (params_->layer_count > 1 && params_->inclination_count > 1)
   {
     params_->scan_time_factor = params_->layer_count;
     reader_ = std::shared_ptr<PFPacketReader>(
-        new PointcloudPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str(), params_->layer_count));
+        new PointcloudPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str(), params_->layer_count, swap_inclination_layer));
   }
   else
   {
     params_->scan_time_factor = 1;
     reader_ = std::shared_ptr<PFPacketReader>(
-        new LaserscanPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str()));
+        new LaserscanPublisher(node_, config_, params_, topic.c_str(), frame_id.c_str(), false));
   }
 
   if (std::find(opi.commands.begin(), opi.commands.end(), "list_iq_parameters") != opi.commands.end())
   {
     has_iq_parameters_ = true;
   }
-
-  product_ = protocol_interface_->get_product();
-  RCLCPP_INFO(node_->get_logger(), "Device found: %s", product_.c_str());
 
   // release previous handles
   if (!prev_handle_.empty())

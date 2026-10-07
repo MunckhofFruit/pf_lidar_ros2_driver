@@ -42,7 +42,7 @@ TEST(PFPipeline_TestSuite, testPipelineReadWrite)
   config->watchdog = true;
 
   std::shared_ptr<Reader<PFPacket>> reader =
-      std::shared_ptr<PFPacketReader>(new LaserscanPublisher(node, config, params, "/scan", "scanner"));
+      std::shared_ptr<PFPacketReader>(new LaserscanPublisher(node, config, params, "/scan", "scanner", false));
 
   std::shared_ptr<std::mutex> net_mtx = std::make_shared<std::mutex>();
   std::shared_ptr<std::condition_variable> net_cv = std::make_shared<std::condition_variable>();
